@@ -1,0 +1,30 @@
+{
+  "name": "reconnect-core",
+  "description": "Generic stream reconnection module.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/juliangruber/reconnect-core.git"
+  },
+  "homepage": "https://github.com/juliangruber/reconnect-core",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "dependencies": {
+    "backoff": "~2.3.0"
+  },
+  "devDependencies": {
+    "tape": "~1.0.4"
+  },
+  "keywords": [
+    "reconnect",
+    "core"
+  ],
+  "author": {
+    "name": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com"
+  },
+  "license": "MIT"
+}
