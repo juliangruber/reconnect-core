@@ -3,6 +3,10 @@
 
 Generic stream reconnection module.
 
+[![build status](https://secure.travis-ci.org/juliangruber/reconnect-core.png)](http://travis-ci.org/juliangruber/reconnect-core)
+
+[![testling badge](https://ci.testling.com/juliangruber/reconnect-core.png)](https://ci.testling.com/juliangruber/reconnect-core)
+
 ## Usage
 
 Create a `reconnect` instance that keeps reconnecting over tcp:
