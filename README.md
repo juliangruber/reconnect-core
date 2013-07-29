@@ -39,6 +39,7 @@ reconnect({}, function (stream) {
 ## Available implementations
 
 * tcp: [reconnect-net](https://github.com/juliangruber/reconnect-net)
+* engine.io/websockets: [reconnect-engine](https://github.com/juliangruber/reconnect-engine)
 
 ## Installation
 
