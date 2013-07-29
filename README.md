@@ -1,4 +1,3 @@
-
 # reconnect-core
 
 Generic stream reconnection module.
@@ -36,6 +35,10 @@ reconnect({}, function (stream) {
 })
 .connect(port)
 ```
+
+## Available implementations
+
+* tcp: [reconnect-net](https://github.com/juliangruber/reconnect-net)
 
 ## Installation
 
