@@ -68,7 +68,8 @@ function (createConnection) {
           .on('connect', function () {
             backoffMethod.reset()
             emitter.connected = true
-            con.removeListener('connect', onConnect)
+            if(onConnect)
+              con.removeListener('connect', onConnect)
             emitter.emit('connect', con)
             //also support net style 'connection' method.
             emitter.emit('connection', con)
