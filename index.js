@@ -5,7 +5,7 @@ module.exports =
 function (createConnection) {
   return function (opts, onConnect) {
     onConnect = 'function' == typeof opts ? opts : onConnect
-    opts = opts || {initialDelay: 1e3, maxDelay: 30e3}
+    opts = 'object' == typeof opts ? opts : {initialDelay: 1e3, maxDelay: 30e3}
     if(!onConnect)
       onConnect = opts.onConnect
 
