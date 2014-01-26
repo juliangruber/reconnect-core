@@ -90,6 +90,7 @@ function (createConnection) {
 
     //force reconnection
 
+    emitter.end =
     emitter.disconnect = function () {
       emitter.reconnect = false
 
