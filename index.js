@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter
 var backoff = require('backoff')
+var noop = function () {}
 
 module.exports =
 function (createConnection) {
@@ -23,18 +24,20 @@ function (createConnection) {
     })
 
     var args
+    var cleanup = noop
     function attempt (n, delay) {
-      if(emitter.connected) return
       if(!emitter.reconnect) return
 
+      cleanup()
       emitter.emit('reconnect', n, delay)
       var con = createConnection.apply(null, args)
       if (con !== emitter._connection)
         emitter.emit('connection', con)
       emitter._connection = con
 
-      function onDisconnect (err) {
-        emitter.connected = false
+      cleanup = onCleanup
+      function onCleanup(err) {
+        cleanup = noop
         con.removeListener('error', onDisconnect)
         con.removeListener('close', onDisconnect)
         con.removeListener('end'  , onDisconnect)
@@ -42,7 +45,13 @@ function (createConnection) {
         //hack to make http not crash.
         //HTTP IS THE WORST PROTOCOL.
         if(con.constructor.name == 'Request')
-          con.on('error', function () {})
+          con.on('error', noop)
+
+      }
+
+      function onDisconnect (err) {
+        emitter.connected = false
+        onCleanup(err)
 
         //emit disconnect before checking reconnect, so user has a chance to decide not to.
         emitter.emit('disconnect', err)
@@ -78,10 +87,9 @@ function (createConnection) {
     emitter.connect =
     emitter.listen = function () {
       this.reconnect = true
-      if(emitter.connected) return
       backoffMethod.reset()
       backoffMethod.on('ready', attempt)
-      args = args || [].slice.call(arguments)
+      args = arguments.length ? [].slice.call(arguments) : args
       attempt(0, 0)
       return emitter
     }
