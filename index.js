@@ -15,9 +15,8 @@ function (createConnection) {
     emitter.reconnect = true
 
     if(onConnect)
-      //use "connection" to match core (net) api.
-      emitter.on('connection', onConnect)
-    
+      emitter.on('connect', onConnect)
+
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
     backoffMethod.on('backoff', function (n, d) {
