@@ -32,6 +32,8 @@ function (createConnection) {
       cleanup()
       emitter.emit('reconnect', n, delay)
       var con = createConnection.apply(null, args)
+      if (con !== emitter._connection)
+        emitter.emit('connection', con)
       emitter._connection = con
 
       cleanup = onCleanup
@@ -67,7 +69,6 @@ function (createConnection) {
       if(opts.immediate || con.constructor.name == 'Request') {
         emitter.connected = true
         emitter.emit('connect', con)
-        emitter.emit('connection', con)
         con.once('data', function () {
           //this is the only way to know for sure that data is coming...
           backoffMethod.reset()
@@ -80,8 +81,6 @@ function (createConnection) {
             if(onConnect)
               con.removeListener('connect', onConnect)
             emitter.emit('connect', con)
-            //also support net style 'connection' method.
-            emitter.emit('connection', con)
           })
       }
     }
