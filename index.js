@@ -89,7 +89,7 @@ function (createConnection) {
       this.reconnect = true
       backoffMethod.reset()
       backoffMethod.on('ready', attempt)
-      args = args || [].slice.call(arguments)
+      args = [].slice.call(arguments)
       attempt(0, 0)
       return emitter
     }
