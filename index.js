@@ -39,6 +39,7 @@ function (createConnection) {
       cleanup = onCleanup
       function onCleanup(err) {
         cleanup = noop
+        con.removeListener('connect', connect)
         con.removeListener('error', onDisconnect)
         con.removeListener('close', onDisconnect)
         con.removeListener('end'  , onDisconnect)
@@ -61,6 +62,14 @@ function (createConnection) {
         try { backoffMethod.backoff() } catch (_) { }
       }
 
+      function connect() {
+        backoffMethod.reset()
+        emitter.connected = true
+        if(onConnect)
+          con.removeListener('connect', onConnect)
+        emitter.emit('connect', con)
+      }
+
       con
         .on('error', onDisconnect)
         .on('close', onDisconnect)
@@ -74,14 +83,7 @@ function (createConnection) {
           backoffMethod.reset()
         })
       } else {
-        con
-          .on('connect', function () {
-            backoffMethod.reset()
-            emitter.connected = true
-            if(onConnect)
-              con.removeListener('connect', onConnect)
-            emitter.emit('connect', con)
-          })
+        con.on('connect', connect)
       }
     }
 
