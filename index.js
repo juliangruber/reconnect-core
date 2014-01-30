@@ -25,6 +25,7 @@ function (createConnection) {
 
     var args
     var cleanup = noop
+    backoffMethod.on('ready', attempt)
     function attempt (n, delay) {
       if(!emitter.reconnect) return
 
@@ -88,7 +89,6 @@ function (createConnection) {
     emitter.listen = function () {
       this.reconnect = true
       backoffMethod.reset()
-      backoffMethod.on('ready', attempt)
       args = [].slice.call(arguments)
       attempt(0, 0)
       return emitter
