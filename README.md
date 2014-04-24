@@ -1,4 +1,3 @@
-
 # reconnect-core
 
 Generic stream reconnection module.
@@ -21,7 +20,7 @@ var reconnect = inject(function () {
   return net.connect.apply(null, arguments);
 });
 
-reconnect({}, function (stream) {
+var re = reconnect({}, function (stream) {
   // stream = the stream you should consume 
 })
 .on('connect', function (con) {
