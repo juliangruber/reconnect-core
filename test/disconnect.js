@@ -24,8 +24,6 @@ test('disconnect', function (t) {
   var reconnector = reconnect({initialDelay: 10})
 
   reconnector.on('disconnect', function() {
-    if (!timeout) return
-
     clearTimeout(timeout)
     t.ok(true, 'disconnected')
   })

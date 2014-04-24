@@ -96,7 +96,6 @@ function (createConnection) {
       if(emitter._connection)
         emitter._connection.end()
 
-      emitter.emit('disconnect')
       return emitter
     }
 
