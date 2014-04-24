@@ -1,3 +1,4 @@
+
 # reconnect-core
 
 Generic stream reconnection module.
@@ -34,6 +35,9 @@ reconnect({}, function (stream) {
   // err = possible error  
 })
 .connect(port)
+
+// disconnect
+re.disconnect();
 ```
 
 ## Available implementations
