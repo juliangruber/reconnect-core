@@ -9,7 +9,7 @@
   "homepage": "https://github.com/juliangruber/reconnect-core",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "make test"
   },
   "dependencies": {
     "backoff": "~2.3.0"
