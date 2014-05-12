@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter
 var backoff = require('backoff')
+var noop = function () {}
 
 module.exports =
 function (createConnection) {
@@ -14,9 +15,8 @@ function (createConnection) {
     emitter.reconnect = true
 
     if(onConnect)
-      //use "connection" to match core (net) api.
-      emitter.on('connection', onConnect)
-    
+      emitter.on('connect', onConnect)
+
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
     backoffMethod.on('backoff', function (n, d) {
@@ -24,16 +24,22 @@ function (createConnection) {
     })
 
     var args
+    var cleanup = noop
+    backoffMethod.on('ready', attempt)
     function attempt (n, delay) {
-      if(emitter.connected) return
       if(!emitter.reconnect) return
 
+      cleanup()
       emitter.emit('reconnect', n, delay)
       var con = createConnection.apply(null, args)
+      if (con !== emitter._connection)
+        emitter.emit('connection', con)
       emitter._connection = con
 
-      function onDisconnect (err) {
-        emitter.connected = false
+      cleanup = onCleanup
+      function onCleanup(err) {
+        cleanup = noop
+        con.removeListener('connect', connect)
         con.removeListener('error', onDisconnect)
         con.removeListener('close', onDisconnect)
         con.removeListener('end'  , onDisconnect)
@@ -41,13 +47,27 @@ function (createConnection) {
         //hack to make http not crash.
         //HTTP IS THE WORST PROTOCOL.
         if(con.constructor.name == 'Request')
-          con.on('error', function () {})
+          con.on('error', noop)
+
+      }
+
+      function onDisconnect (err) {
+        emitter.connected = false
+        onCleanup(err)
 
         //emit disconnect before checking reconnect, so user has a chance to decide not to.
         emitter.emit('disconnect', err)
 
         if(!emitter.reconnect) return
         try { backoffMethod.backoff() } catch (_) { }
+      }
+
+      function connect() {
+        backoffMethod.reset()
+        emitter.connected = true
+        if(onConnect)
+          con.removeListener('connect', onConnect)
+        emitter.emit('connect', con)
       }
 
       con
@@ -58,32 +78,20 @@ function (createConnection) {
       if(opts.immediate || con.constructor.name == 'Request') {
         emitter.connected = true
         emitter.emit('connect', con)
-        emitter.emit('connection', con)
         con.once('data', function () {
           //this is the only way to know for sure that data is coming...
           backoffMethod.reset()
         })
       } else {
-        con
-          .on('connect', function () {
-            backoffMethod.reset()
-            emitter.connected = true
-            if(onConnect)
-              con.removeListener('connect', onConnect)
-            emitter.emit('connect', con)
-            //also support net style 'connection' method.
-            emitter.emit('connection', con)
-          })
+        con.on('connect', connect)
       }
     }
 
     emitter.connect =
     emitter.listen = function () {
       this.reconnect = true
-      if(emitter.connected) return
       backoffMethod.reset()
-      backoffMethod.on('ready', attempt)
-      args = args || [].slice.call(arguments)
+      args = [].slice.call(arguments)
       attempt(0, 0)
       return emitter
     }
