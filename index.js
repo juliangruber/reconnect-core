@@ -16,7 +16,7 @@ function (createConnection) {
     if(onConnect)
       //use "connection" to match core (net) api.
       emitter.on('connection', onConnect)
-    
+
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
     backoffMethod.on('backoff', function (n, d) {
@@ -34,9 +34,16 @@ function (createConnection) {
 
       function onDisconnect (err) {
         emitter.connected = false
-        con.removeListener('error', onDisconnect)
-        con.removeListener('close', onDisconnect)
-        con.removeListener('end'  , onDisconnect)
+        if(con.removeEventListener) {
+          con.removeEventListener('error', onDisconnect)
+          con.removeEventListener('close', onDisconnect)
+          con.removeEventListener('end'  , onDisconnect)
+        }
+        else {
+          con.removeListener('error', onDisconnect)
+          con.removeListener('close', onDisconnect)
+          con.removeListener('end'  , onDisconnect)
+        }
 
         //hack to make http not crash.
         //HTTP IS THE WORST PROTOCOL.
@@ -50,10 +57,16 @@ function (createConnection) {
         try { backoffMethod.backoff() } catch (_) { }
       }
 
-      con
-        .on('error', onDisconnect)
-        .on('close', onDisconnect)
-        .on('end'  , onDisconnect)
+      if(con.addEventListener) {
+        con.addEventListener('error', onDisconnect)
+        con.addEventListener('close', onDisconnect)
+        con.addEventListener('end'  , onDisconnect)
+      }
+      else {
+        con.on('error', onDisconnect)
+        con.on('close', onDisconnect)
+        con.on('end'  , onDisconnect)
+      }
 
       if(opts.immediate || con.constructor.name == 'Request') {
         emitter.connected = true
@@ -64,16 +77,25 @@ function (createConnection) {
           backoffMethod.reset()
         })
       } else {
-        con
-          .on('connect', function () {
-            backoffMethod.reset()
-            emitter.connected = true
-            if(onConnect)
+        function onConnect2() {
+          backoffMethod.reset()
+          emitter.connected = true
+
+          if(onConnect)
+            if(con.removeEventListener)
+              con.removeEventListener('open', onConnect)
+            else
               con.removeListener('connect', onConnect)
-            emitter.emit('connect', con)
-            //also support net style 'connection' method.
-            emitter.emit('connection', con)
-          })
+
+          emitter.emit('connect', con)
+          //also support net style 'connection' method.
+          emitter.emit('connection', con)
+        }
+
+        if(con.addEventListener)
+          con.addEventListener('open', onConnect2)
+        else
+          con.on('connect', onConnect2)
       }
     }
 
