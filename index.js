@@ -3,6 +3,8 @@ var backoff = require('backoff')
 
 module.exports =
 function (createConnection) {
+  var ctx = {};
+
   return function (opts, onConnect) {
     onConnect = 'function' == typeof opts ? opts : onConnect
     opts = 'object' == typeof opts ? opts : {initialDelay: 1e3, maxDelay: 30e3}
@@ -29,7 +31,7 @@ function (createConnection) {
       if(!emitter.reconnect) return
 
       emitter.emit('reconnect', n, delay)
-      var con = createConnection.apply(null, args)
+      var con = ctx.prevCon = createConnection.apply(ctx, args)
       emitter._connection = con
 
       function onDisconnect (err) {
