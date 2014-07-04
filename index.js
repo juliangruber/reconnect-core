@@ -19,8 +19,12 @@ function (createConnection) {
     
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
-    backoffMethod.on('backoff', function (n, d) {
-      emitter.emit('backoff', n, d)
+    backoffMethod.on('backoff', function (n, d, e) {
+      emitter.emit('backoff', n, d, e)
+    })
+    backoffMethod.on('fail', function (e) {
+      emitter.disconnect()
+      emitter.emit('fail', e)
     })
 
     var args
