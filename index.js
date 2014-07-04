@@ -19,6 +19,9 @@ function (createConnection) {
     
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
+    if(opts.failAfter)
+      backoffMethod.failAfter(opts.failAfter);
+
     backoffMethod.on('backoff', function (n, d, e) {
       emitter.emit('backoff', n, d, e)
     })
