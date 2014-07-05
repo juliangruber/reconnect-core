@@ -9,8 +9,6 @@ function (createConnection) {
     if(!onConnect)
       onConnect = opts.onConnect
 
-    var ctx = {};
-
     var emitter = new EventEmitter()
     emitter.connected = false
     emitter.reconnect = true
@@ -31,7 +29,7 @@ function (createConnection) {
       if(!emitter.reconnect) return
 
       emitter.emit('reconnect', n, delay)
-      var con = ctx.prevCon = createConnection.apply(ctx, args)
+      var con = createConnection.apply(emitter, args)
       emitter._connection = con
 
       function onDisconnect (err) {
