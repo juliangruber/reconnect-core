@@ -29,7 +29,7 @@ function (createConnection) {
       if(!emitter.reconnect) return
 
       emitter.emit('reconnect', n, delay)
-      var con = createConnection.apply(null, args)
+      var con = createConnection.apply(emitter, args)
       emitter._connection = con
 
       function onDisconnect (err) {
