@@ -17,6 +17,7 @@ var net = require('net');
 // build you own reconnect module
 var reconnect = inject(function () {
   // arguments are what you passed to .connect
+  // this is the reconnect instance
   return net.connect.apply(null, arguments);
 });
 
