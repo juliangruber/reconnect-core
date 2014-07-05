@@ -4,20 +4,20 @@ var Stream = require('stream')
 var Emitter = require('events').EventEmitter
 var noop = function () {}
 
-var ee = new Emitter
-
-var reconnect = inject(function () {
-  var s = new Stream
-  ee.on('start server', function () {
-    s.emit('connect')
-    s.emit('close')
-  })
-  s.end = noop
-  return s
-})
-
 test('connection', function (t) {
   t.plan(4) // reconnect and connect
+
+  var ee = new Emitter
+
+  var reconnect = inject(function () {
+    var s = new Stream
+    ee.on('start server', function () {
+      s.emit('connect')
+      s.emit('close')
+    })
+    s.end = noop
+    return s
+  })
 
   var reconnector = reconnect({initialDelay: 10}, function (stream) {
     reconnector.reconnect = false
@@ -43,4 +43,16 @@ test('connection', function (t) {
     .on('connect', onConnect)
     .on('reconnect', onReconnect)
     .connect()
+})
+
+test('this arg', function (t) {
+  var thisArg
+  var reconnect = inject(function () {
+    thisArg = this
+    return new Stream
+  })
+  var reconnector = reconnect()
+  reconnector.connect()
+  t.equal(thisArg, reconnector)
+  t.end()
 })
