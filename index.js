@@ -3,13 +3,13 @@ var backoff = require('backoff')
 
 module.exports =
 function (createConnection) {
-  var ctx = {};
-
   return function (opts, onConnect) {
     onConnect = 'function' == typeof opts ? opts : onConnect
     opts = 'object' == typeof opts ? opts : {initialDelay: 1e3, maxDelay: 30e3}
     if(!onConnect)
       onConnect = opts.onConnect
+
+    var ctx = {};
 
     var emitter = new EventEmitter()
     emitter.connected = false
