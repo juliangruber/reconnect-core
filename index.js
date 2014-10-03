@@ -72,7 +72,7 @@ function (createConnection) {
         })
       } else {
         con
-          .on('connect', function () {
+          .once('connect', function () {
             backoffMethod.reset()
             emitter.connected = true
             if(onConnect)
