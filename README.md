@@ -38,6 +38,9 @@ var re = reconnect({}, function (stream) {
 
 // disconnect
 re.disconnect();
+
+// ...or prevent reconnecting
+re.reconnect = false;
 ```
 
 ## Available implementations
