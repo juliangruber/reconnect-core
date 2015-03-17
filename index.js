@@ -16,7 +16,7 @@ function (createConnection) {
     if(onConnect)
       //use "connection" to match core (net) api.
       emitter.on('connection', onConnect)
-    
+
     var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
 
     if(opts.failAfter)
@@ -39,9 +39,14 @@ function (createConnection) {
       var con = createConnection.apply(emitter, args)
       emitter._connection = con
 
+      function onError (err) {
+        con.removeListener('error', onError)
+        emitter.emit('error', err)
+        onDisconnect(err)
+      }
+
       function onDisconnect (err) {
         emitter.connected = false
-        con.removeListener('error', onDisconnect)
         con.removeListener('close', onDisconnect)
         con.removeListener('end'  , onDisconnect)
 
@@ -58,7 +63,7 @@ function (createConnection) {
       }
 
       con
-        .on('error', onDisconnect)
+        .on('error', onError)
         .on('close', onDisconnect)
         .on('end'  , onDisconnect)
 
