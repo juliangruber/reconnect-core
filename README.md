@@ -34,6 +34,9 @@ var re = reconnect({}, function (stream) {
 .on('disconnect', function (err) {
   // err = possible error  
 })
+.on('error', function (err) {
+  // never forget
+})
 .connect(port)
 
 // disconnect
