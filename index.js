@@ -41,7 +41,11 @@ function (createConnection) {
 
       function onError (err) {
         con.removeListener('error', onError)
-        emitter.emit('error', err)
+        try
+        {
+          emitter.emit('error', err)
+        }
+        catch(e){}
         onDisconnect(err)
       }
 
@@ -59,7 +63,7 @@ function (createConnection) {
         emitter.emit('disconnect', err)
 
         if(!emitter.reconnect) return
-        try { backoffMethod.backoff() } catch (_) { }
+        try { backoffMethod.backoff(err) } catch (_) { }
       }
 
       con
