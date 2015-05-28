@@ -95,7 +95,13 @@ function (createConnection) {
       if(emitter.connected) return
       backoffMethod.reset()
       backoffMethod.on('ready', attempt)
-      args = args || [].slice.call(arguments)
+      if (!args) {
+        var len = arguments.length;
+        args = new Array(len);
+        for (var i = 0; i < len; i++) {
+          args[i] = arguments[i];
+        }
+      }
       attempt(0, 0)
       return emitter
     }
