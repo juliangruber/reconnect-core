@@ -52,6 +52,9 @@ re.disconnect();
 
 // ...or prevent reconnecting
 re.reconnect = false;
+
+// reset the internal backoff timer
+re.reset();
 ```
 
 ## Available implementations
