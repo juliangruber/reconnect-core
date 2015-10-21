@@ -21,7 +21,15 @@ var reconnect = inject(function () {
   return net.connect.apply(null, arguments);
 });
 
-var re = reconnect({}, function (stream) {
+var re = reconnect({
+  // all options are optional
+  initialDelay: 1e3,
+  maxDelay: 30e3,
+  type: 'fibonacci',      // available: fibonacci, exponential
+  failAfter: Infinity,
+  randomisationFactor: 0,
+  immediate: false
+}, function (stream) {
   // stream = the stream you should consume 
 })
 .on('connect', function (con) {
