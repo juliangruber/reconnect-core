@@ -117,6 +117,11 @@ function (createConnection) {
       return emitter
     }
 
+    emitter.reset = function () {
+      backoffMethod.reset()
+      attempt(0, 0)
+    }
+
     return emitter
   }
 
