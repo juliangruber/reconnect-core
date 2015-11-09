@@ -12,10 +12,10 @@
     "test": "make test"
   },
   "dependencies": {
-    "backoff": "~2.3.0"
+    "backoff": "~2.4.1"
   },
   "devDependencies": {
-    "tape": "~1.0.4"
+    "tape": "~4.2.2"
   },
   "keywords": [
     "reconnect",
