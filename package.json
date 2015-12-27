@@ -15,7 +15,7 @@
     "backoff": "~2.4.1"
   },
   "devDependencies": {
-    "tape": "~4.3.0"
+    "tape": "~4.4.0"
   },
   "keywords": [
     "reconnect",
