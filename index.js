@@ -19,10 +19,10 @@ function (createConnection) {
 
     var backoffStrategy = opts.strategy || opts.type
     var backoffMethod
-    if (backoffStrategy instanceof backoff.Backoff)
-      backoffMethod = backoffStrategy
+    if (typeof backoffStrategy == 'string')
+      backoffMethod = backoff[backoffStrategy](opts)
     else
-      backoffMethod = (backoff[backoffStrategy] || backoff.fibonacci) (opts)
+      backoffMethod = backoffStrategy || backoff.fibonacci(opts)
 
     if(opts.failAfter)
       backoffMethod.failAfter(opts.failAfter);
