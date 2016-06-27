@@ -17,7 +17,12 @@ function (createConnection) {
       //use "connection" to match core (net) api.
       emitter.on('connection', onConnect)
 
-    var backoffMethod = (backoff[opts.type] || backoff.fibonacci) (opts)
+    var backoffStrategy = opts.strategy || opts.type
+    var backoffMethod
+    if (backoffStrategy instanceof backoff.Backoff)
+      backoffMethod = backoffStrategy
+    else
+      backoffMethod = (backoff[backoffStrategy] || backoff.fibonacci) (opts)
 
     if(opts.failAfter)
       backoffMethod.failAfter(opts.failAfter);
