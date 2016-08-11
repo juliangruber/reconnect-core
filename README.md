@@ -3,6 +3,7 @@
 Generic stream reconnection module.
 
 [![build status](https://secure.travis-ci.org/juliangruber/reconnect-core.png)](http://travis-ci.org/juliangruber/reconnect-core)
+[![downloads](https://img.shields.io/npm/dm/reconnect-core.svg)](https://www.npmjs.org/package/reconnect-core)
 
 [![testling badge](https://ci.testling.com/juliangruber/reconnect-core.png)](https://ci.testling.com/juliangruber/reconnect-core)
 
