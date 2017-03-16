@@ -46,7 +46,11 @@ function (createConnection) {
 
       function onError (err) {
         con.removeListener('error', onError)
-        emitter.emit('error', err)
+        try
+        {
+          emitter.emit('error', err)
+        }
+        catch(e){}
         onDisconnect(err)
       }
 
@@ -64,7 +68,7 @@ function (createConnection) {
         emitter.emit('disconnect', err)
 
         if(!emitter.reconnect) return
-        try { backoffMethod.backoff() } catch (_) { }
+        try { backoffMethod.backoff(err) } catch (_) { }
       }
 
       con
@@ -72,10 +76,16 @@ function (createConnection) {
         .on('close', onDisconnect)
         .on('end'  , onDisconnect)
 
+        function emitConnect()
+        {
+          emitter.connected = true
+          emitter.emit('connection', con)
+          emitter.emit('connect', con)
+        }
+
       if(opts.immediate || con.constructor.name == 'Request') {
-        emitter.connected = true
-        emitter.emit('connect', con)
-        emitter.emit('connection', con)
+        emitConnect()
+
         con.once('data', function () {
           //this is the only way to know for sure that data is coming...
           backoffMethod.reset()
@@ -84,12 +94,11 @@ function (createConnection) {
         con
           .once('connect', function () {
             backoffMethod.reset()
-            emitter.connected = true
+
             if(onConnect)
               con.removeListener('connect', onConnect)
-            emitter.emit('connect', con)
-            //also support net style 'connection' method.
-            emitter.emit('connection', con)
+
+            emitConnect()
           })
       }
     }
