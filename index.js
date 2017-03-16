@@ -9,7 +9,7 @@ function (createConnection) {
     if(!onConnect)
       onConnect = opts.onConnect
 
-    var emitter = new EventEmitter()
+    var emitter = opts.emitter || new EventEmitter()
     emitter.connected = false
     emitter.reconnect = true
 
