@@ -93,6 +93,28 @@ var re = reconnect({
 })
 ```
 
+## Events management
+
+`reconnect` will mainly listen to `connect`, `error` and `close` events from the connection created by the function given during injection (this function will be referred later as `createConnection`).
+
+Based on these events, `reconnect` will emit the following events:
+
+- `connect` with the connection object when this connection emits `connect` event
+- `error` with the original error when such an `error` event is emitted by the underlying connection
+- `disconnect` once the underlying connection is closed
+
+`reconnect` will always close the underlying connection on its first error and stop listening to `error` events.
+This means that if no one but `reconnect` is listening to these events, you have to take into consideration [Node.js error events handling](https://nodejs.org/dist/latest/docs/api/events.html#events_error_events).
+
+If the underlying connection does not emit `connect`, `error` or `close` events, you will have to implement an adapter that will emit these events based on the real connection object behavior.
+To ease the development of such an adapter, `reconnect` gives you access to its [event emitter](https://nodejs.org/dist/latest/docs/api/events.html#events_class_eventemitter).
+In fact it is passed as the `this` instance when the `createConnection` function is called during injection.
+
+Having access to this emitter gives you the opportunity to have `reconnect` emit:
+
+- an event while the underlying connection did not trigger it (like the `connect` event as you can see it [here](https://github.com/rapid7/le_node/blob/1.7.1/src/logger.js#L170))
+- a custom event that `reconnect` does not normally emit (you can for instance re-emit `data` events from the underlying connection)
+
 ## Available implementations
 
 * tcp: [reconnect-net](https://github.com/juliangruber/reconnect-net)
